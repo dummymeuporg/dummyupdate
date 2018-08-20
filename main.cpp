@@ -1,31 +1,26 @@
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/foreach.hpp>
 #include <string>
 #include <set>
 #include <exception>
 #include <iostream>
 
-namespace pt = boost::property_tree;
+#include <boost/filesystem.hpp>
 
-void load_file(const std::string& filename)
+#include "dummy/project.hpp"
+
+namespace fs = boost::filesystem;
+
+int main(int argc, char* argv[])
 {
-    pt::ptree tree;
-
-    pt::read_xml(filename, tree);
-
-    BOOST_FOREACH(pt::ptree::value_type& v, tree.get_child("project.maps"))
+    if (argc < 2)
     {
-        std::cout << v.first.data() << std::endl;
-        BOOST_FOREACH(pt::ptree::value_type& w, v.second.get_child("<xmlattr>"))
-        {
-            std::cout << w.second.data() << std::endl;
-        }
+        std::cerr << "Usage: " << argv[0] << " PROJECT_DIR" << std::endl;
+        ::exit(EXIT_FAILURE);
     }
-}
-
-int main(void)
-{
-    load_file("project.xml");
+    fs::path projectDir{argv[1]};
+    Dummy::Project project(projectDir);
+    for (auto it = project.files().begin(); it != project.files().end(); ++it)
+    {
+        std::cout << it->first << std::endl;
+    }
     return 0;
 }

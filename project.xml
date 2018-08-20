@@ -1,6 +1,0 @@
-<project>
-	<maps>
-		<map name="Foo" />
-		<map name="bar" />
-	</maps>
-</project>
