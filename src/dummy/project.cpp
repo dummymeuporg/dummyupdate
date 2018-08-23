@@ -16,17 +16,27 @@ namespace pt = boost::property_tree;
 namespace fs = boost::filesystem;
 
 Dummy::Project::Project(const fs::path& projectDirectory)
+    : m_projectPath(projectDirectory)
 {
     pt::ptree tree;
 
-    pt::read_xml((projectDirectory / "project.xml").string(), tree);
+    pt::read_xml((m_projectPath / "project.xml").string(), tree);
 
     BOOST_FOREACH(pt::ptree::value_type& v, tree.get_child("project.maps"))
     {
         BOOST_FOREACH(pt::ptree::value_type& w,
                       v.second.get_child("<xmlattr>"))
         {
-            m_files["maps/" + w.second.data() + ".map"] = "";
+            fs::path mapPath(fs::path("maps/" + w.second.data() + ".map"));
+            if (!fs::exists(m_projectPath / mapPath))
+            {
+                BOOST_LOG_TRIVIAL(error) << "Map " << mapPath
+                    << " does not exist.";
+            }
+            else
+            {
+                m_files["maps/" + w.second.data() + ".map"] = "";
+            }
         }
     }
 
@@ -36,11 +46,11 @@ Dummy::Project::Project(const fs::path& projectDirectory)
        BOOST_LOG_TRIVIAL(debug) << "Folder " << folder;
        try {
            for (auto& entry: boost::make_iterator_range(
-                    fs::directory_iterator(projectDirectory / folder), {}))
+                    fs::directory_iterator(m_projectPath / folder), {}))
            {
                 BOOST_LOG_TRIVIAL(debug) << "\tFile " << entry;
                 m_files[fs::relative(entry.path(),
-                                     projectDirectory).string()] = "";
+                                     m_projectPath).string()] = "";
            }
        } catch (const boost::filesystem::filesystem_error& e) {
             BOOST_LOG_TRIVIAL(error) << "Could not list folder " << folder
