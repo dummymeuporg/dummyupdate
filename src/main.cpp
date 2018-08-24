@@ -4,6 +4,8 @@
 #include <exception>
 #include <iostream>
 
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/tcp.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>
 
@@ -24,5 +26,14 @@ int main(int argc, char* argv[])
     {
         BOOST_LOG_TRIVIAL(debug) << "Found " << it->first;
     }
+
+    boost::asio::io_service io_service;
+    boost::asio::ip::tcp::endpoint tcp_endpoint{boost::asio::ip::tcp::v4(),
+                                                8087};
+    boost::asio::ip::tcp::acceptor tcp_acceptor{io_service, tcp_endpoint};
+
+    tcp_acceptor.listen();
+    ioservice.run();
+
     return 0;
 }
