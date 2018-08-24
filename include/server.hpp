@@ -24,7 +24,7 @@ private:
            boost::asio::tcp::acceptor&,
            boost::asio::ip::tcp::endpoint&);
 
-    boost::asio::io_service m_ioService;
+    boost::asio::io_service& m_ioService;
     boost::asio::tcp::acceptor& m_acceptor;
     boost::asio::tcp::ip::endpoint& m_endpoint;
 };
