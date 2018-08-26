@@ -2,6 +2,7 @@
 #include <boost/asio/ip/tcp.hpp>
 
 #include "server.hpp"
+#include "session.hpp"
 
 
 Server::Server(boost::asio::io_service& ioService, unsigned short port)

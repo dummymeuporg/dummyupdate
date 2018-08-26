@@ -8,7 +8,7 @@
 class Session : public std::enable_shared_from_this<Session>
 {
 public:
-    Session(boost::asion::ip::tcp::socket);
+    Session(boost::asio::ip::tcp::socket);
     void start();
 
 private:
