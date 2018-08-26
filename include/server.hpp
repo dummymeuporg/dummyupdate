@@ -1,30 +1,15 @@
 #pragma once
 
-// Forward declarations
-namespace boost
-{
-    namespace asio
-    {
-        class io_service;
-        namespace ip {
-            class acceptor;
-            namespace tcp {
-                class endpoint;
-            }
-        }
-    }
-}
-
+#include <boost/asio.hpp>
+#include <boost/asio/ip/tcp.hpp>
 
 class Server {
 
+public:
+    Server(boost::asio::io_service&, unsigned short);
+
 private:
+    void _doAccept();
 
-    Server(boost::asio::io_service&,
-           boost::asio::tcp::acceptor&,
-           boost::asio::ip::tcp::endpoint&);
-
-    boost::asio::io_service& m_ioService;
-    boost::asio::tcp::acceptor& m_acceptor;
-    boost::asio::tcp::ip::endpoint& m_endpoint;
+    boost::asio::ip::tcp::acceptor m_acceptor;
 };

@@ -5,4 +5,5 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lboost_filesystem -lboost
 add_executable(dummyupdate
 	src/main.cpp
 	src/dummy/project.cpp
+	src/server.cpp
 )

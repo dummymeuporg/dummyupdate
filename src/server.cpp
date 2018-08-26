@@ -1,13 +1,17 @@
-#include <boost/asio/io_service.h>
-#include <boost/asio/ip/tcp.h>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/tcp.hpp>
 
 #include "server.hpp"
 
 
-Server::Server(boost::asio::io_service& ioService,
-               boost::asio::tcp::acceptor& acceptor,
-               boost::asio::ip::tcp::endpoint& endpoint)
-    : m_ioService(ioService), m_acceptor(acceptor), m_endpoint(endpoint)
+Server::Server(boost::asio::io_service& ioService, unsigned short port)
+    : m_acceptor(ioService,
+                 boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
+                                                port))
 {
+    _doAccept();
 }
 
+void Server::_doAccept()
+{
+}
