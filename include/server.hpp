@@ -6,6 +6,7 @@
 class Server {
 
 public:
+    const int ACTUAL_VERSION = 1;
     Server(boost::asio::io_service&, unsigned short);
 
 private:

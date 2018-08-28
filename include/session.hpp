@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 
 #include <boost/asio.hpp>
@@ -11,9 +12,15 @@ public:
     Session(boost::asio::ip::tcp::socket);
     void start();
 
+    std::uint16_t header() const {
+        return m_header;
+    }
+
 private:
-    void _doRead();
+    void _doReadHeader();
+    void _doReadContent();
     void _doWrite();
 
     boost::asio::ip::tcp::socket m_socket;
+    std::uint16_t m_header;
 };

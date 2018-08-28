@@ -15,4 +15,15 @@ Server::Server(boost::asio::io_service& ioService, unsigned short port)
 
 void Server::_doAccept()
 {
+    m_acceptor.async_accept(
+        [this](boost::system::error_code ec,
+               boost::asio::ip::tcp::socket socket)
+        {
+            if (!ec)
+            {
+                std::make_shared<Session>(std::move(socket))->start();
+            }
+            _doAccept();
+        }
+    );
 }
