@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include <boost/asio.hpp>
 
@@ -23,4 +24,6 @@ private:
 
     boost::asio::ip::tcp::socket m_socket;
     std::uint16_t m_header;
+    std::vector<std::uint8_t> m_payload;
+    int m_index;
 };
