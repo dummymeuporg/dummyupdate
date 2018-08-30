@@ -6,6 +6,10 @@
 
 #include <boost/asio.hpp>
 
+namespace Session
+{
+    class State;
+}
 
 class Session : public std::enable_shared_from_this<Session>
 {
@@ -23,6 +27,7 @@ private:
     void _doWrite();
 
     boost::asio::ip::tcp::socket m_socket;
+    std::unique_ptr<State> m_state;
     std::uint16_t m_header;
     std::vector<std::uint8_t> m_payload;
     int m_index;

@@ -1,9 +1,11 @@
 #pragma once
 
+#include "state.hpp"
+
 namespace Session
 {
-    class InitialState
+    class InitialState : public State
     {
-        virtual void onRead() = 0;
+        virtual void onRead() override;
     };
 }

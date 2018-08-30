@@ -1,5 +1,6 @@
 #define BOOST_LOG_DYN_LINK 1
 #include "session.hpp"
+#include "session/initial_state.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/log/trivial.hpp>

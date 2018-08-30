@@ -1,6 +1,7 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
+#include "session/initial_state.hpp"
 #include "server.hpp"
 #include "session.hpp"
 
