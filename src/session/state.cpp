@@ -1,7 +1,8 @@
 #include "server.hpp"
+#include "session.hpp"
 #include "session/state.hpp"
 
-Session::State::State(Server& server)
-    : m_server(server)
+SessionState::State::State(Session& session)
+    : m_session(session)
 {
 }

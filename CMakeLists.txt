@@ -7,4 +7,6 @@ add_executable(dummyupdate
 	src/dummy/project.cpp
 	src/server.cpp
 	src/session.cpp
+	src/session/state.cpp
+	src/session/initial_state.cpp
 )

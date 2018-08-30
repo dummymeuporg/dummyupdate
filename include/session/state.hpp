@@ -2,17 +2,17 @@
 
 
 // Forward reference
-class Server;
+class Session;
 
-namespace Session
+namespace SessionState
 {
     class State
     {
     public:
-        State(Server&);
+        State(Session&);
         virtual void onRead() = 0;
 
     private:
-        Server& m_server;
+        Session& m_session;
     };
 }

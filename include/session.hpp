@@ -6,7 +6,7 @@
 
 #include <boost/asio.hpp>
 
-namespace Session
+namespace SessionState
 {
     class State;
 }
@@ -27,7 +27,7 @@ private:
     void _doWrite();
 
     boost::asio::ip::tcp::socket m_socket;
-    std::unique_ptr<State> m_state;
+    std::unique_ptr<SessionState::State> m_state;
     std::uint16_t m_header;
     std::vector<std::uint8_t> m_payload;
     int m_index;

@@ -7,6 +7,7 @@
 
 Session::Session(boost::asio::ip::tcp::socket s)
     : m_socket(std::move(s)),
+      m_state(new SessionState::InitialState(*this)),
       m_index(0)
 {
 
