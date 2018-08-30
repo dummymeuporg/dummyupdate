@@ -32,9 +32,9 @@ void Session::_doReadHeader()
                                          << m_header << " more bytes.";
                 m_index = 0;
                 m_payload.resize(m_header);
+                _doReadContent();
             }
 
-            _doReadContent();
         }
     );
 }
@@ -44,14 +44,14 @@ void Session::_doReadContent()
     auto self(shared_from_this());
     boost::asio::async_read(
         m_socket,
-        boost::asio::buffer(&m_payload, m_header),
+        boost::asio::buffer(m_payload, m_header),
         [this, self](boost::system::error_code ec, std::size_t lenght)
         {
             if (!ec)
             {
                 BOOST_LOG_TRIVIAL(debug) << "Read " << lenght << " bytes.";
+                _doReadHeader();
             }
-            _doReadHeader();
         }
     );
 }
