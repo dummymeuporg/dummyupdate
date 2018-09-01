@@ -52,6 +52,7 @@ void Session::_doReadContent()
             if (!ec)
             {
                 BOOST_LOG_TRIVIAL(debug) << "Read " << lenght << " bytes.";
+                m_state->onRead(m_payload);
                 _doReadHeader();
             }
         }

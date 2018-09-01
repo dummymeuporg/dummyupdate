@@ -10,6 +10,6 @@ namespace SessionState
     {
     public:
         InitialState(Session&);
-        virtual void onRead() override;
+        virtual void onRead(const std::vector<std::uint8_t>&) override;
     };
 }

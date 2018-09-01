@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+
+#include <boost/asio.hpp>
 
 // Forward reference
 class Session;
@@ -10,7 +13,7 @@ namespace SessionState
     {
     public:
         State(Session&);
-        virtual void onRead() = 0;
+        virtual void onRead(const std::vector<std::uint8_t>&) = 0;
 
     private:
         Session& m_session;
