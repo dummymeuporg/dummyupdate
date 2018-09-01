@@ -19,6 +19,12 @@ void Session::start()
     _doReadHeader();
 }
 
+void Session::next()
+{
+    BOOST_LOG_TRIVIAL(debug) << "Next command.";
+    _doReadHeader();
+}
+
 void Session::_doReadHeader()
 {
     auto self(shared_from_this());
@@ -53,7 +59,6 @@ void Session::_doReadContent()
             {
                 BOOST_LOG_TRIVIAL(debug) << "Read " << lenght << " bytes.";
                 m_state->onRead(m_payload);
-                _doReadHeader();
             }
         }
     );

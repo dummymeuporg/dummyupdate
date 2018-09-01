@@ -19,6 +19,7 @@ namespace Dummy {
         }
 
     private:
+        static std::string _getHashFile(const boost::filesystem::path&);
         // Base project path
         boost::filesystem::path m_projectPath;
         // Keys are filenames, values are sha1 sums.

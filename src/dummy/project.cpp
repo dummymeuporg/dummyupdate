@@ -58,3 +58,8 @@ Dummy::Project::Project(const fs::path& projectDirectory)
        }
     }
 }
+
+std::string Dummy::Project::_getHashFile(const boost::filesystem::path& path)
+{
+    return "";
+}

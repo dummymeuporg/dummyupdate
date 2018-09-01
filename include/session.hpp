@@ -16,9 +16,14 @@ class Session : public std::enable_shared_from_this<Session>
 public:
     Session(boost::asio::ip::tcp::socket);
     void start();
+    void next();
 
     std::uint16_t header() const {
         return m_header;
+    }
+
+    boost::asio::ip::tcp::socket& socket() {
+        return m_socket;
     }
 
 private:
