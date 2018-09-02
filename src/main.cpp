@@ -6,6 +6,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/endian/conversion.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>
 
@@ -13,6 +14,8 @@
 #include "server.hpp"
 
 namespace fs = boost::filesystem;
+
+std::string displayHash(const std::array<unsigned int, 5>&);
 
 int main(int argc, char* argv[])
 {
@@ -26,12 +29,24 @@ int main(int argc, char* argv[])
     for (auto it = project.files().begin(); it != project.files().end(); ++it)
     {
         BOOST_LOG_TRIVIAL(debug) << "Found " << it->first;
+        BOOST_LOG_TRIVIAL(debug) << displayHash(it->second);
     }
 
     boost::asio::io_service ioservice;
 
-    Server svr(ioservice, 8087);
+    Server svr(ioservice, 8087, project);
     ioservice.run();
 
     return 0;
+}
+
+
+std::string displayHash(const std::array<unsigned int, 5>& hash)
+{
+    std::ostringstream buf;
+    for (int i = 0; i < 5; i++)
+    {
+        buf << std::hex << hash[i];
+    }
+    return buf.str();
 }

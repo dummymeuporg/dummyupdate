@@ -10,7 +10,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/range/iterator_range.hpp>
-#include <boost/uuid/sha1.hpp>
+#include <boost/uuid/detail/sha1.hpp>
 
 #include "dummy/project.hpp"
 
@@ -74,9 +74,14 @@ Dummy::Project::_getHashFile(const boost::filesystem::path& path)
 
     while (!file.eof())
     {
-        char chunk[chunkSize];
+        char chunk[chunkSize] = {'\0'};
         file.read(chunk, chunkSize);
-        s.process_bytes(chunk, chunkSize);
+        std::streamsize n = file.gcount();
+
+        if (n != 0)
+        {
+            s.process_bytes(chunk, n);
+        }
     }
     s.get_digest(_hash);
 

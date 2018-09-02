@@ -1,15 +1,18 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
+#include "dummy/project.hpp"
 #include "session/initial_state.hpp"
 #include "server.hpp"
 #include "session.hpp"
 
 
-Server::Server(boost::asio::io_service& ioService, unsigned short port)
+Server::Server(boost::asio::io_service& ioService, unsigned short port,
+               Dummy::Project& project)
     : m_acceptor(ioService,
                  boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
-                                                port))
+                                                port)),
+      m_project(project)
 {
     _doAccept();
 }
@@ -22,7 +25,8 @@ void Server::_doAccept()
         {
             if (!ec)
             {
-                std::make_shared<Session>(std::move(socket))->start();
+                std::make_shared<Session>(std::move(socket),
+                                          m_project)->start();
             }
             _doAccept();
         }

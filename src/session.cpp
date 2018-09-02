@@ -5,9 +5,11 @@
 #include <boost/asio.hpp>
 #include <boost/log/trivial.hpp>
 
-Session::Session(boost::asio::ip::tcp::socket s)
+Session::Session(boost::asio::ip::tcp::socket s,
+                 const Dummy::Project& project)
     : m_socket(std::move(s)),
       m_state(new SessionState::InitialState(*this)),
+      m_project(project),
       m_index(0)
 {
 
