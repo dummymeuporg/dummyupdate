@@ -14,15 +14,18 @@ namespace Dummy {
             return m_projectPath;
         }
 
-        const std::map<std::string, std::string>& files() const {
+        const std::map<std::string, std::array<unsigned int, 5>>&
+        files() const
+        {
             return m_files;
         }
 
     private:
-        static std::string _getHashFile(const boost::filesystem::path&);
+        static std::array<unsigned int, 5> _getHashFile(
+            const boost::filesystem::path&);
         // Base project path
         boost::filesystem::path m_projectPath;
         // Keys are filenames, values are sha1 sums.
-        std::map<std::string, std::string> m_files;
+        std::map<std::string, std::array<unsigned int, 5>> m_files;
     };
 }

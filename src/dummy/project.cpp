@@ -1,7 +1,8 @@
 #define BOOST_LOG_DYN_LINK 1
 #include <array>
-#include <string>
+#include <fstream>
 #include <iostream>
+#include <string>
 
 #include <boost/foreach.hpp>
 #include <boost/log/trivial.hpp>
@@ -9,6 +10,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/range/iterator_range.hpp>
+#include <boost/uuid/sha1.hpp>
 
 #include "dummy/project.hpp"
 
@@ -35,7 +37,8 @@ Dummy::Project::Project(const fs::path& projectDirectory)
             }
             else
             {
-                m_files["maps/" + w.second.data() + ".map"] = "";
+                m_files["maps/" + w.second.data() + ".map"] =
+                    _getHashFile(m_projectPath / mapPath);
             }
         }
     }
@@ -50,7 +53,8 @@ Dummy::Project::Project(const fs::path& projectDirectory)
            {
                 BOOST_LOG_TRIVIAL(debug) << "\tFile " << entry;
                 m_files[fs::relative(entry.path(),
-                                     m_projectPath).string()] = "";
+                                     m_projectPath).string()] = 
+                    _getHashFile(entry);
            }
        } catch (const boost::filesystem::filesystem_error& e) {
             BOOST_LOG_TRIVIAL(error) << "Could not list folder " << folder
@@ -59,7 +63,28 @@ Dummy::Project::Project(const fs::path& projectDirectory)
     }
 }
 
-std::string Dummy::Project::_getHashFile(const boost::filesystem::path& path)
+std::array<unsigned int, 5>
+Dummy::Project::_getHashFile(const boost::filesystem::path& path)
 {
-    return "";
+    boost::uuids::detail::sha1 s;
+    std::ifstream file(path.string());
+
+    const int chunkSize = 512;
+    unsigned int _hash[5];
+
+    while (!file.eof())
+    {
+        char chunk[chunkSize];
+        file.read(chunk, chunkSize);
+        s.process_bytes(chunk, chunkSize);
+    }
+    s.get_digest(_hash);
+
+    std::array<unsigned int, 5> hash;
+    for (int i = 0; i < 5; i++)
+    {
+        hash[i] = _hash[i];
+    }
+
+    return hash;
 }
