@@ -46,7 +46,8 @@ void SessionState::SendHashesState::_doSendFilesCount()
             if (!ec)
             {
                 m_filesIterator = m_session.project().files().begin();
-                m_session.next();
+                //m_session.next();
+                _sendNextFileInfo();
             }
         }
     );
