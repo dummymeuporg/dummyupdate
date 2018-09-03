@@ -19,7 +19,7 @@ void SessionState::SendHashesState::onRead(
 void SessionState::SendHashesState::_doSendFilesCountHeader()
 {
     auto self(m_session.shared_from_this());
-    std::uint16_t countHeader = m_session.project().files().size();
+    std::uint16_t countHeader = sizeof(std::uint32_t);
     boost::asio::async_write(
         m_session.socket(),
         boost::asio::buffer(&countHeader, sizeof(countHeader)),
@@ -35,5 +35,18 @@ void SessionState::SendHashesState::_doSendFilesCountHeader()
 
 void SessionState::SendHashesState::_doSendFilesCount()
 {
+
     auto self(m_session.shared_from_this());
+    std::uint32_t filesCount = m_session.project().files().size();
+    boost::asio::async_write(
+        m_session.socket(),
+        boost::asio::buffer(&filesCount, sizeof(filesCount)),
+        [this, self](boost::system::error_code ec, std::size_t lenght)
+        {
+            if (!ec)
+            {
+                m_session.next();
+            }
+        }
+    );
 }

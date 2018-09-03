@@ -36,6 +36,13 @@ public:
         return m_project;
     }
 
+    template<typename T>
+    Session& setState()
+    {
+        m_state = std::make_unique<T>(*this);
+        return *this;
+    }
+
 private:
     void _doReadHeader();
     void _doReadContent();

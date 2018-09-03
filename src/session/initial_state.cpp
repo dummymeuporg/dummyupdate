@@ -5,6 +5,8 @@
 #include <boost/log/trivial.hpp>
 
 #include "session.hpp"
+#include "session/send_hashes_state.hpp"
+
 #include "session/initial_state.hpp"
 
 SessionState::InitialState::InitialState(Session& session)
@@ -29,7 +31,8 @@ void SessionState::InitialState::onRead(
         {
             if (!ec)
             {
-                m_session.next();
+                m_session.setState<SessionState::SendHashesState>();
+                //m_session.next();
             }
         }
     );
