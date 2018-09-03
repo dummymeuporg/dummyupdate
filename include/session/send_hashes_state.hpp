@@ -11,5 +11,8 @@ namespace SessionState
     public:
         SendHashesState(Session&);
         virtual void onRead(const std::vector<std::uint8_t>&) override;
+    private:
+        void _doSendFilesCount();
+        void _doSendFilesCountHeader();
     };
 }
