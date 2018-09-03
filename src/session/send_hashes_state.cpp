@@ -45,8 +45,13 @@ void SessionState::SendHashesState::_doSendFilesCount()
         {
             if (!ec)
             {
+                m_filesIterator = m_session.project().files().begin();
                 m_session.next();
             }
         }
     );
+}
+
+void SessionState::SendHashesState::_sendNextFileInfo()
+{
 }

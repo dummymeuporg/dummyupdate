@@ -15,18 +15,34 @@ SessionState::InitialState::InitialState(Session& session)
 
 }
 
-void SessionState::InitialState::onRead(
-    const std::vector<std::uint8_t>& buffer)
+void SessionState::InitialState::_sendHeader()
 {
-    BOOST_LOG_TRIVIAL(debug) << "Initial state on read";
     auto self(m_session.shared_from_this());
-    std::uint16_t version = *reinterpret_cast<const std::uint16_t*>(
-        buffer.data());
-    BOOST_LOG_TRIVIAL(debug) << version;
+    std::uint16_t headerLenght = m_result.size();
 
     boost::asio::async_write(
         m_session.socket(),
-        boost::asio::buffer("OK", 2),
+        boost::asio::buffer(&headerLenght, sizeof(headerLenght)),
+        [this, self](boost::system::error_code ec, std::size_t lenght)
+        {
+            if (!ec)
+            {
+                _sendResult();
+                //m_session.setState<SessionState::SendHashesState>();
+                //m_session.next();
+            }
+        }
+    );
+}
+
+void SessionState::InitialState::_sendResult()
+{
+    auto self(m_session.shared_from_this());
+    std::uint16_t headerLenght = m_result.size();
+
+    boost::asio::async_write(
+        m_session.socket(),
+        boost::asio::buffer(m_result, m_result.size()),
         [this, self](boost::system::error_code ec, std::size_t lenght)
         {
             if (!ec)
@@ -36,5 +52,24 @@ void SessionState::InitialState::onRead(
             }
         }
     );
+}
 
+void SessionState::InitialState::onRead(
+    const std::vector<std::uint8_t>& buffer)
+{
+    BOOST_LOG_TRIVIAL(debug) << "Initial state on read";
+    auto self(m_session.shared_from_this());
+    std::uint16_t version = *reinterpret_cast<const std::uint16_t*>(
+        buffer.data());
+    BOOST_LOG_TRIVIAL(debug) << version;
+
+    if (version == 1)
+    {
+        m_result = "OK";
+    }
+    else
+    {
+        m_result = "KO";
+    }
+    _sendHeader();
 }

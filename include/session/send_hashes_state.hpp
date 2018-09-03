@@ -14,5 +14,7 @@ namespace SessionState
     private:
         void _doSendFilesCount();
         void _doSendFilesCountHeader();
+        std::map<std::string, std::array<unsigned int, 5>>::const_iterator
+            m_filesIterator;
     };
 }
