@@ -1,5 +1,7 @@
 #define BOOST_LOG_DYN_LINK 1
 
+#include <boost/log/trivial.hpp>
+
 #include "dummy/project.hpp"
 #include "session.hpp"
 #include "session/send_hashes_state.hpp"
@@ -60,8 +62,9 @@ void SessionState::SendHashesState::_sendNextFileInfo()
     const std::array<unsigned int, 5> hash(m_filesIterator->second);
     std::uint16_t bufSize = filename.size() +
         hash.size() * sizeof(std::uint32_t);
+
     const std::uint8_t* pt = reinterpret_cast<const std::uint8_t*>(&bufSize);
-    std::vector<uint8_t> buf(sizeof(std::uint16_t) + bufSize);
+    std::vector<uint8_t> buf;
 
     // Set packet size
     buf.insert(buf.begin(), pt, pt + 2);
@@ -76,6 +79,7 @@ void SessionState::SendHashesState::_sendNextFileInfo()
         pt,
         pt + sizeof(std::uint32_t) * hash.size()
     );
+
     boost::asio::async_write(
         m_session.socket(),
         boost::asio::buffer(buf),
@@ -91,6 +95,7 @@ void SessionState::SendHashesState::_sendNextFileInfo()
                 }
                 else
                 {
+                    BOOST_LOG_TRIVIAL(debug) << "Next file.";
                     _sendNextFileInfo();                
                 }
             }
