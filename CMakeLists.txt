@@ -9,5 +9,6 @@ add_executable(dummyupdate
 	src/session.cpp
 	src/session/state.cpp
 	src/session/initial_state.cpp
+	src/session/send_files_state.cpp
 	src/session/send_hashes_state.cpp
 )
