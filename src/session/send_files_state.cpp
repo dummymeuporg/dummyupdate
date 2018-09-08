@@ -30,7 +30,8 @@ void SessionState::SendFilesState::onRead(
     BOOST_LOG_TRIVIAL(debug) << "Request " << filename;
 
     if (filename.find("..") != std::string::npos
-        || command != SessionState::SendFilesState::CODE_SEND)
+        || command != SessionState::SendFilesState::CODE_SEND
+        || !m_session.project().hasFile(filename))
     {
         // Close connexion.
     }

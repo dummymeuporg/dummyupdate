@@ -93,3 +93,9 @@ Dummy::Project::_getHashFile(const boost::filesystem::path& path)
 
     return hash;
 }
+
+
+bool Dummy::Project::hasFile(const std::string& filename) const
+{
+    return m_files.find(filename) != m_files.end();
+}

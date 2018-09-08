@@ -20,6 +20,8 @@ namespace Dummy {
             return m_files;
         }
 
+        bool hasFile(const std::string&) const;
+
     private:
         static std::array<unsigned int, 5> _getHashFile(
             const boost::filesystem::path&);
