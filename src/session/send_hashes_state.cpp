@@ -4,6 +4,8 @@
 
 #include "dummy/project.hpp"
 #include "session.hpp"
+
+#include "session/send_files_state.hpp"
 #include "session/send_hashes_state.hpp"
 
 SessionState::SendHashesState::SendHashesState(Session& session)
@@ -91,6 +93,7 @@ void SessionState::SendHashesState::_sendNextFileInfo()
 
                 if (m_filesIterator == m_session.project().files().end())
                 {
+                    m_session.setState<SessionState::SendFilesState>();
                     m_session.next();
                 }
                 else

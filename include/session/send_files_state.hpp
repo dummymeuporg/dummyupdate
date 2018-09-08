@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fstream>
 
 #include "session.hpp"
 #include "session/state.hpp"
@@ -14,5 +15,12 @@ namespace SessionState
 
         SendFilesState(Session&);
         virtual void onRead(const std::vector<std::uint8_t>&) override;
+    private:
+        static const int CHUNK_SIZE = 512;
+        std::unique_ptr<std::fstream> m_currentFile;
+        std::array<std::uint8_t, CHUNK_SIZE> m_chunk;
+
+        void _sendFileHeader();
+        void _sendNextFileChunk();
     };
 }
