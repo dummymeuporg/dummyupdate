@@ -97,9 +97,10 @@ void SessionState::SendFilesState::_sendFileHeader()
 void SessionState::SendFilesState::_sendNextFileChunk()
 {
     auto self(m_session.shared_from_this());
-    m_currentFile->read(reinterpret_cast<char*>(m_chunk.data()),
-                        m_chunk.size());
+    m_currentFile->read(reinterpret_cast<char*>(m_chunk.data() + 2),
+                        m_chunk.size() - 2);
     std::streamsize n = m_currentFile->gcount();
+    std::copy_n(reinterpret_cast<char*>(&n), 2, m_chunk.data());
 
     if (n == 0)
     {
@@ -109,7 +110,7 @@ void SessionState::SendFilesState::_sendNextFileChunk()
     {
         boost::asio::async_write(
             m_session.socket(),
-            boost::asio::buffer(m_chunk),
+            boost::asio::buffer(m_chunk, n + 2),
             [this, self](boost::system::error_code ec, std::size_t lenght)
             {
                 if (!ec)
