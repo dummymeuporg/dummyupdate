@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 
+#include <boost/endian/conversion.hpp>
 #include <boost/foreach.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/filesystem.hpp>
@@ -88,7 +89,7 @@ Dummy::Project::_getHashFile(const boost::filesystem::path& path)
     std::array<unsigned int, 5> hash;
     for (int i = 0; i < 5; i++)
     {
-        hash[i] = _hash[i];
+        hash[i] = boost::endian::endian_reverse(_hash[i]);
     }
 
     return hash;

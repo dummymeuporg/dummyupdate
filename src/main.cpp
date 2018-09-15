@@ -46,7 +46,7 @@ std::string displayHash(const std::array<unsigned int, 5>& hash)
     std::ostringstream buf;
     for (int i = 0; i < 5; i++)
     {
-        buf << std::hex << hash[i];
+        buf << std::hex << boost::endian::endian_reverse(hash[i]);
     }
     return buf.str();
 }

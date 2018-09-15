@@ -100,7 +100,9 @@ void SessionState::SendFilesState::_sendNextFileChunk()
     m_currentFile->read(reinterpret_cast<char*>(m_chunk.data() + 2),
                         m_chunk.size() - 2);
     std::streamsize n = m_currentFile->gcount();
+    BOOST_LOG_TRIVIAL(debug) << "Chunk: " << n;
     std::copy_n(reinterpret_cast<char*>(&n), 2, m_chunk.data());
+    BOOST_LOG_TRIVIAL(debug) << "offset: " << m_currentFile->tellg();
 
     if (n == 0)
     {
