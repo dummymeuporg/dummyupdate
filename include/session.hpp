@@ -39,7 +39,7 @@ public:
     template<typename T>
     Session& setState()
     {
-        m_state = std::make_unique<T>(*this);
+        m_state = std::make_shared<T>(*this);
         return *this;
     }
 
@@ -49,7 +49,7 @@ private:
     void _doWrite();
 
     boost::asio::ip::tcp::socket m_socket;
-    std::unique_ptr<SessionState::State> m_state;
+    std::shared_ptr<SessionState::State> m_state;
     const Dummy::Project& m_project;
 
     std::uint16_t m_header;
