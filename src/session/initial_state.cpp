@@ -38,12 +38,14 @@ void SessionState::InitialState::_sendHeader()
 void SessionState::InitialState::_sendResult()
 {
     auto self(m_session.shared_from_this());
+    auto selfState(shared_from_this());
     std::uint16_t headerLenght = m_result.size();
 
     boost::asio::async_write(
         m_session.socket(),
         boost::asio::buffer(m_result, m_result.size()),
-        [this, self](boost::system::error_code ec, std::size_t lenght)
+        [this, self, selfState](boost::system::error_code ec,
+                                std::size_t lenght)
         {
             if (!ec)
             {

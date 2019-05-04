@@ -8,7 +8,7 @@
 Session::Session(boost::asio::ip::tcp::socket s,
                  const Dummy::Project& project)
     : m_socket(std::move(s)),
-      m_state(new SessionState::InitialState(*this)),
+      m_state(std::make_shared<SessionState::InitialState>(*this)),
       m_project(project),
       m_index(0)
 {
@@ -52,10 +52,12 @@ void Session::_doReadHeader()
 void Session::_doReadContent()
 {
     auto self(shared_from_this());
+    auto selfState(m_state->shared_from_this());
     boost::asio::async_read(
         m_socket,
         boost::asio::buffer(m_payload, m_header),
-        [this, self](boost::system::error_code ec, std::size_t lenght)
+        [this, self, selfState](boost::system::error_code ec,
+                                std::size_t lenght)
         {
             if (!ec)
             {

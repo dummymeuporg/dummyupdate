@@ -60,6 +60,7 @@ void SessionState::SendHashesState::_doSendFilesCount()
 void SessionState::SendHashesState::_sendNextFileInfo()
 {
     auto self(m_session.shared_from_this());
+    auto selfState(shared_from_this());
     const std::string& filename(m_filesIterator->first);
     const std::array<unsigned int, 5> hash(m_filesIterator->second);
     std::uint16_t bufSize = filename.size() +
@@ -85,7 +86,8 @@ void SessionState::SendHashesState::_sendNextFileInfo()
     boost::asio::async_write(
         m_session.socket(),
         boost::asio::buffer(buf),
-        [this, self](boost::system::error_code ec, std::size_t lenght)
+        [this, self, selfState](boost::system::error_code ec,
+                                std::size_t lenght)
         {
             if (!ec)
             {
