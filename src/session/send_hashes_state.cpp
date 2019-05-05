@@ -57,10 +57,6 @@ void SessionState::SendHashesState::_doSendFilesCount()
         {
             if (!ec)
             {
-                for(auto it = m_session->project().files().begin();
-                        it != m_session->project().files().end(); ++it) {
-                    std::cerr << "Test: " << it->first << std::endl;
-                }
                 m_filesIterator = m_session->project().files().begin();
                 std::cerr << "Iteration: " << m_filesIterator->first
                     << std::endl;
