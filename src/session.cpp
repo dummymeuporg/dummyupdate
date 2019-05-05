@@ -1,4 +1,7 @@
-#define BOOST_LOG_DYN_LINK 1
+#include <iostream>
+
+#include "project_content.hpp"
+
 #include "session.hpp"
 #include "session/initial_state.hpp"
 
@@ -6,24 +9,29 @@
 #include <boost/log/trivial.hpp>
 
 Session::Session(boost::asio::ip::tcp::socket s,
-                 const Dummy::Project& project)
+                 const ProjectContent& project)
     : m_socket(std::move(s)),
-      m_state(std::make_shared<SessionState::InitialState>(*this)),
+      m_state(nullptr),
       m_project(project),
       m_index(0)
 {
 
+    for (const auto& file: project.files())
+    {
+        std::cerr << "Found " << file.first << std::endl;
+    }
 }
 
 void Session::start()
 {
-    BOOST_LOG_TRIVIAL(debug) << "Session started.";
+    m_state = std::make_shared<SessionState::InitialState>(shared_from_this());
+    std::cerr << "Session started." << std::endl;
     _doReadHeader();
 }
 
 void Session::next()
 {
-    BOOST_LOG_TRIVIAL(debug) << "Next command.";
+    std::cerr << "Next command." << std::endl;
     _doReadHeader();
 }
 
@@ -35,11 +43,11 @@ void Session::_doReadHeader()
         boost::asio::buffer(&m_header, sizeof(std::uint16_t)),
         [this, self](boost::system::error_code ec, std::size_t length)
         {
-            BOOST_LOG_TRIVIAL(debug) << "Read " << length << " bytes.";
+            std::cerr << "Read " << length << " bytes." << std::endl;
             if (!ec)
             {
-                BOOST_LOG_TRIVIAL(debug) << "Will read "
-                                         << m_header << " more bytes.";
+            std::cerr << "Will read " << m_header << " more bytes."
+                << std::endl;
                 m_index = 0;
                 m_payload.resize(m_header);
                 _doReadContent();
@@ -61,7 +69,7 @@ void Session::_doReadContent()
         {
             if (!ec)
             {
-                BOOST_LOG_TRIVIAL(debug) << "Read " << lenght << " bytes.";
+                std::cerr << "Read " << lenght << " bytes." << std::endl;
                 m_state->onRead(m_payload);
             }
         }
@@ -73,3 +81,9 @@ void Session::_doWrite()
 
 }
 
+Session& Session::setState(std::shared_ptr<SessionState::State> state)
+{
+    m_state = state;
+    m_state->resume();
+    return *this;
+}

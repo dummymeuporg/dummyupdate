@@ -10,7 +10,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>
 
-#include "dummy/project.hpp"
+#include "project_content.hpp"
 #include "server.hpp"
 
 namespace fs = boost::filesystem;
@@ -25,11 +25,18 @@ int main(int argc, char* argv[])
         ::exit(EXIT_FAILURE);
     }
     fs::path projectDir{argv[1]};
-    Dummy::Project project(projectDir);
-    for (auto it = project.files().begin(); it != project.files().end(); ++it)
+    ProjectContent project(projectDir);
+
+    for (const auto& file: project.files())
     {
-        BOOST_LOG_TRIVIAL(debug) << "Found " << it->first;
-        BOOST_LOG_TRIVIAL(debug) << displayHash(it->second);
+        std::cerr << "Found " << file.first << std::endl;
+        std::cerr << displayHash(file.second) << std::endl;
+    }
+
+    for(auto it = project.files().begin();
+            it != project.files().end(); it++) {
+        std::cerr << "Test: " << it->first << std::endl;
+        std::cerr << displayHash(it->second) << std::endl;
     }
 
     boost::asio::io_service ioservice;

@@ -4,20 +4,23 @@
 
 #include <boost/log/trivial.hpp>
 
-#include "dummy/project.hpp"
+#include "project_content.hpp"
 #include "session/send_files_state.hpp"
 
 
-SessionState::SendFilesState::SendFilesState(Session& session)
+SessionState::SendFilesState::SendFilesState(std::shared_ptr<Session> session)
     : SessionState::State(session), m_currentFile(nullptr)
 {
+
+}
+
+void SessionState::SendFilesState::resume() {
 
 }
 
 void SessionState::SendFilesState::onRead(
     const std::vector<std::uint8_t>& buffer)
 {
-    auto self(m_session.shared_from_this());
     std::uint16_t command = *reinterpret_cast<const std::uint16_t*>(
         buffer.data());
     std::string filename(
@@ -31,7 +34,7 @@ void SessionState::SendFilesState::onRead(
 
     if (filename.find("..") != std::string::npos
         || command != SessionState::SendFilesState::CODE_SEND
-        || !m_session.project().hasFile(filename))
+        || !m_session->project().hasFile(filename))
     {
         // Close connexion.
     }
@@ -39,7 +42,7 @@ void SessionState::SendFilesState::onRead(
     {
         // Check if file exist
         std::string fullpath(
-            (m_session.project().projectPath() / filename).string());
+            (m_session->project().projectPath() / filename).string());
         BOOST_LOG_TRIVIAL(debug) << "Fullpath: " << fullpath;
         m_currentFile = std::make_unique<std::fstream>(fullpath);
         if (m_currentFile->good())
@@ -52,7 +55,9 @@ void SessionState::SendFilesState::onRead(
 
 void SessionState::SendFilesState::_sendFileHeader()
 {
-    auto self(m_session.shared_from_this());
+    auto self(m_session->shared_from_this());
+    auto selfState(shared_from_this());
+
     m_currentFile->seekg(0, std::ios::end);
 
     std::uint32_t fileSize = m_currentFile->tellg();
@@ -79,9 +84,11 @@ void SessionState::SendFilesState::_sendFileHeader()
                pt, pt + 4);
 
     boost::asio::async_write(
-        m_session.socket(),
+        m_session->socket(),
         boost::asio::buffer(buf),
-        [this, self](boost::system::error_code ec, std::size_t lenght)
+        [this,
+         self,
+         selfState](boost::system::error_code ec, std::size_t lenght)
         {
             if (!ec)
             {
@@ -96,7 +103,8 @@ void SessionState::SendFilesState::_sendFileHeader()
 
 void SessionState::SendFilesState::_sendNextFileChunk()
 {
-    auto self(m_session.shared_from_this());
+    auto self(m_session->shared_from_this());
+    auto selfState(shared_from_this());
     m_currentFile->read(reinterpret_cast<char*>(m_chunk.data() + 2),
                         m_chunk.size() - 2);
     std::streamsize n = m_currentFile->gcount();
@@ -106,14 +114,16 @@ void SessionState::SendFilesState::_sendNextFileChunk()
 
     if (n == 0)
     {
-       m_session.next();
+       m_session->next();
     }
     else
     {
         boost::asio::async_write(
-            m_session.socket(),
+            m_session->socket(),
             boost::asio::buffer(m_chunk, n + 2),
-            [this, self](boost::system::error_code ec, std::size_t lenght)
+            [this,
+             self,
+             selfState](boost::system::error_code ec, std::size_t lenght)
             {
                 if (!ec)
                 {

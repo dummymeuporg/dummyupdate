@@ -13,10 +13,11 @@ namespace SessionState
     class State : public std::enable_shared_from_this<State>
     {
     public:
-        State(Session&);
+        State(std::shared_ptr<Session>);
         virtual void onRead(const std::vector<std::uint8_t>&) = 0;
+        virtual void resume() = 0;
 
     protected:
-        Session& m_session;
+        std::shared_ptr<Session> m_session;
     };
 }

@@ -9,8 +9,9 @@ namespace SessionState
     class InitialState : public State
     {
     public:
-        InitialState(Session&);
+        InitialState(std::shared_ptr<Session>);
         virtual void onRead(const std::vector<std::uint8_t>&) override;
+        virtual void resume() override;
 
     private:
         void _sendHeader();

@@ -1,5 +1,6 @@
 #define BOOST_LOG_DYN_LINK 1
 #include <cstdint>
+#include <iostream>
 
 #include <boost/asio.hpp>
 #include <boost/log/trivial.hpp>
@@ -9,27 +10,29 @@
 
 #include "session/initial_state.hpp"
 
-SessionState::InitialState::InitialState(Session& session)
+SessionState::InitialState::InitialState(std::shared_ptr<Session> session)
     : SessionState::State(session)
 {
 
 }
 
+void SessionState::InitialState::resume() {
+
+}
+
 void SessionState::InitialState::_sendHeader()
 {
-    auto self(m_session.shared_from_this());
+    auto self(m_session->shared_from_this());
     std::uint16_t headerLenght = m_result.size();
 
     boost::asio::async_write(
-        m_session.socket(),
+        m_session->socket(),
         boost::asio::buffer(&headerLenght, sizeof(headerLenght)),
         [this, self](boost::system::error_code ec, std::size_t lenght)
         {
             if (!ec)
             {
                 _sendResult();
-                //m_session.setState<SessionState::SendHashesState>();
-                //m_session.next();
             }
         }
     );
@@ -37,20 +40,21 @@ void SessionState::InitialState::_sendHeader()
 
 void SessionState::InitialState::_sendResult()
 {
-    auto self(m_session.shared_from_this());
+    auto self(m_session->shared_from_this());
     auto selfState(shared_from_this());
     std::uint16_t headerLenght = m_result.size();
 
     boost::asio::async_write(
-        m_session.socket(),
+        m_session->socket(),
         boost::asio::buffer(m_result, m_result.size()),
         [this, self, selfState](boost::system::error_code ec,
                                 std::size_t lenght)
         {
             if (!ec)
             {
-                m_session.setState<SessionState::SendHashesState>();
-                //m_session.next();
+                m_session->setState(
+                    std::make_shared<SessionState::SendHashesState>(m_session)
+                );
             }
         }
     );
@@ -59,8 +63,8 @@ void SessionState::InitialState::_sendResult()
 void SessionState::InitialState::onRead(
     const std::vector<std::uint8_t>& buffer)
 {
-    BOOST_LOG_TRIVIAL(debug) << "Initial state on read";
-    auto self(m_session.shared_from_this());
+    std::cerr << "Initial state on read" << std::endl;
+    auto self(m_session->shared_from_this());
     std::uint16_t version = *reinterpret_cast<const std::uint16_t*>(
         buffer.data());
     BOOST_LOG_TRIVIAL(debug) << version;

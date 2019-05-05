@@ -1,14 +1,14 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
-#include "dummy/project.hpp"
+#include "project_content.hpp"
 #include "session/initial_state.hpp"
 #include "server.hpp"
 #include "session.hpp"
 
 
 Server::Server(boost::asio::io_service& ioService, unsigned short port,
-               Dummy::Project& project)
+               const ProjectContent& project)
     : m_acceptor(ioService,
                  boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
                                                 port)),

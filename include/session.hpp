@@ -6,10 +6,7 @@
 
 #include <boost/asio.hpp>
 
-namespace Dummy
-{
-    class Project;
-}
+class ProjectContent;
 
 namespace SessionState
 {
@@ -20,7 +17,7 @@ class Session : public std::enable_shared_from_this<Session>
 {
 public:
     Session(boost::asio::ip::tcp::socket,
-            const Dummy::Project&);
+            const ProjectContent&);
     void start();
     void next();
 
@@ -32,16 +29,11 @@ public:
         return m_socket;
     }
 
-    const Dummy::Project& project() const {
+    const ProjectContent& project() const {
         return m_project;
     }
 
-    template<typename T>
-    Session& setState()
-    {
-        m_state = std::make_shared<T>(*this);
-        return *this;
-    }
+    Session& setState(std::shared_ptr<SessionState::State>);
 
 private:
     void _doReadHeader();
@@ -50,7 +42,7 @@ private:
 
     boost::asio::ip::tcp::socket m_socket;
     std::shared_ptr<SessionState::State> m_state;
-    const Dummy::Project& m_project;
+    const ProjectContent& m_project;
 
     std::uint16_t m_header;
     std::vector<std::uint8_t> m_payload;
