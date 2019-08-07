@@ -15,7 +15,7 @@ ProjectContent::ProjectContent(const fs::path& projectPath) :
 
 void ProjectContent::_getMaps() {
     for (const auto& map: maps()) {
-        std::string filename(map.first + ".map");
+        std::string filename(map + ".map");
         fs::path filePath(fs::path("maps") / filename);
         fs::path fullPath(projectPath() / filePath);
 

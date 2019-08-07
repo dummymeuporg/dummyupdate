@@ -2,7 +2,7 @@
 #include "session.hpp"
 #include "session/state.hpp"
 
-SessionState::State::State(std::shared_ptr<Session> session)
+SessionState::State::State(Session& session)
     : m_session(session)
 {
 }

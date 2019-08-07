@@ -1,10 +1,10 @@
 #pragma once
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
-#include "core/project.hpp"
+#include <dummy/core/project.hpp>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 class ProjectContent : public Dummy::Core::Project {
 public:

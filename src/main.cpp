@@ -1,4 +1,4 @@
-#define BOOST_LOG_DYN_LINK 1
+#include <filesystem>
 #include <string>
 #include <set>
 #include <exception>
@@ -13,7 +13,7 @@
 #include "project_content.hpp"
 #include "server.hpp"
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 std::string displayHash(const std::array<unsigned int, 5>&);
 

@@ -8,9 +8,8 @@
 #include "session/send_files_state.hpp"
 #include "session/send_hashes_state.hpp"
 
-SessionState::SendHashesState::SendHashesState(
-    std::shared_ptr<Session> session
-) : SessionState::State(session)
+SessionState::SendHashesState::SendHashesState(Session& session)
+    : SessionState::State(session)
 {
 }
 
@@ -26,10 +25,10 @@ void SessionState::SendHashesState::onRead(
 
 void SessionState::SendHashesState::_doSendFilesCountHeader()
 {
-    auto self(m_session->shared_from_this());
+    auto self(m_session.shared_from_this());
     std::uint16_t countHeader = sizeof(std::uint32_t);
     boost::asio::async_write(
-        m_session->socket(),
+        m_session.socket(),
         boost::asio::buffer(&countHeader, sizeof(countHeader)),
         [this, self](boost::system::error_code ec, std::size_t lenght)
         {
@@ -44,12 +43,12 @@ void SessionState::SendHashesState::_doSendFilesCountHeader()
 void SessionState::SendHashesState::_doSendFilesCount()
 {
 
-    auto self(m_session->shared_from_this());
+    auto self(m_session.shared_from_this());
     auto selfState(shared_from_this());
-    std::uint32_t filesCount = m_session->project().files().size();
+    std::uint32_t filesCount = m_session.project().files().size();
     std::cerr << "Count: " << filesCount << std::endl;
     boost::asio::async_write(
-        m_session->socket(),
+        m_session.socket(),
         boost::asio::buffer(&filesCount, sizeof(filesCount)),
         [this,
          self,
@@ -57,7 +56,7 @@ void SessionState::SendHashesState::_doSendFilesCount()
         {
             if (!ec)
             {
-                m_filesIterator = m_session->project().files().begin();
+                m_filesIterator = m_session.project().files().begin();
                 std::cerr << "Iteration: " << m_filesIterator->first
                     << std::endl;
                 //m_session.next();
@@ -69,7 +68,7 @@ void SessionState::SendHashesState::_doSendFilesCount()
 
 void SessionState::SendHashesState::_sendNextFileInfo()
 {
-    auto self(m_session->shared_from_this());
+    auto self(m_session.shared_from_this());
     const std::string& filename(m_filesIterator->first);
     const std::array<unsigned int, 5> hash(m_filesIterator->second);
     std::uint16_t bufSize = filename.size() +
@@ -93,7 +92,7 @@ void SessionState::SendHashesState::_sendNextFileInfo()
     );
 
     boost::asio::async_write(
-        m_session->socket(),
+        m_session.socket(),
         boost::asio::buffer(buf),
         [this, self](boost::system::error_code ec, std::size_t lenght)
         {
@@ -103,15 +102,15 @@ void SessionState::SendHashesState::_sendNextFileInfo()
                 ++m_filesIterator;
                 std::cerr << "Iteration: " << m_filesIterator->first << std::endl;
 
-                if (m_filesIterator == m_session->project().files().end())
+                if (m_filesIterator == m_session.project().files().end())
                 {
                     std::cerr << "Change state." << std::endl;
-                    m_session->setState(
+                    m_session.setState(
                         std::make_shared<SessionState::SendFilesState>(
-                            m_session->shared_from_this()
+                            m_session
                         )
                     );
-                    m_session->next();
+                    m_session.next();
                 }
                 else
                 {

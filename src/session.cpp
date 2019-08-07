@@ -24,7 +24,7 @@ Session::Session(boost::asio::ip::tcp::socket s,
 
 void Session::start()
 {
-    m_state = std::make_shared<SessionState::InitialState>(shared_from_this());
+    m_state = std::make_shared<SessionState::InitialState>(*this);
     std::cerr << "Session started." << std::endl;
     _doReadHeader();
 }

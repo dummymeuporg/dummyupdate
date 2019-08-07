@@ -9,7 +9,7 @@ namespace SessionState
     class SendHashesState : public State
     {
     public:
-        SendHashesState(std::shared_ptr<Session>);
+        SendHashesState(Session&);
         virtual void onRead(const std::vector<std::uint8_t>&) override;
         virtual void resume() override;
     private:
